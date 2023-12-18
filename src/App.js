@@ -4,14 +4,19 @@ import axios from "axios";
 function App() {
   const [data,setData] = useState({})
   const [location, setLocation] = useState('')
+  const [first, setFirst] = useState(0)
 
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=85f9be45df21ca7a5afe8fd8815f6bbc&units=metric`
-
   const searchLocation = (event) => {
     if(event.key === 'Enter'){
       axios.get(apiUrl).then((response) => {
         setData(response.data)
         console.log(response.data)
+        setFirst(1)
+      }).catch(err => {
+        console.log(" Cidade Não Existe!..")
+        data.name = undefined
+        setFirst(1)
       })
       setLocation('')
     }
@@ -28,6 +33,7 @@ function App() {
         type="text"/>
       </div>
       <div className="container">
+        {data.name !== undefined && first !== 0 &&
         <div className="top">
           <div className="location">
             <p>{data.name}</p>
@@ -39,9 +45,10 @@ function App() {
             {data.weather ? <p>{data.weather[0].main}</p> : null}
           </div>
         </div>
+        }
 
-        {data.name != undefined && 
-          <div className="bottom">
+        {data.name !== undefined && first !== 0 &&
+        <div className="bottom">
           <div className="feels">
             {data.main ? <p className="bold">{data.main.feels_like.toFixed()}ºC</p> : null}
             <p>Feels Like</p>
@@ -54,6 +61,11 @@ function App() {
             {data.wind ? <p className="bold">{data.wind.speed} Km</p> : null}
             <p>Wind Speed</p>
           </div>
+        </div>
+        }
+        {data.name === undefined && first !== 0 &&
+        <div className="errorMessage">
+          Cidade Não Existe!
         </div>
         }
       </div>
